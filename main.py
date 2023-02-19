@@ -161,7 +161,6 @@ def task1():
         print (bio_mass)
         change_weather_result.append(community)
         
-
     plt.figure(figsize=(9,6))
     plt.plot(t, change_weather_result[0], label="Rainy season")
     plt.plot(t, change_weather_result[1], label="Irregular cycle")
@@ -173,12 +172,84 @@ def task1():
     
 
 
+        
+
+def task2():
+    t = np.linspace(1, 365, 365)
+    m = np.linspace(0, 150, 151)
+    global total
+    bio_mass = []
+    max_biomass = 0
+    max_biomass_index = 0
+    boundary_biomass_index = []
+    boundary_biomass = []
+    
+    for i in np.nditer(m):
+        total = 0 
+        num = int(i)
+        # 生成生态型列表
+        plant_type_list = ["wet", "common", "xerophytic"]
+        # 打乱生态型列表
+        random.shuffle(plant_type_list)
+        
+        community = np.zeros(len(t))
+        
+        for j in range(num):
+            one, time = species_population(N0, t, population_type= plant_type_list[random.randint(0,2)], species_num = num)
+            community += one
+        
+        mass = community[-1]
+        if mass > max_biomass:
+            max_biomass = mass
+            max_biomass_index = num
+        if mass > 0.97*20 and mass < 1.02*20:
+            boundary_biomass_index.append(num)
+            boundary_biomass.append(mass)
+        
+        bio_mass.append(mass)
+        print("Number of species: ", i)
+    
+    print ("Max biomass: ", max_biomass)
+    print ("Max biomass index: ", max_biomass_index)
+    print ("Boundary biomass index: ", boundary_biomass_index)
+    print ("Boundary biomass: ", boundary_biomass)
+    
+    plt.figure(figsize=(9,6))
+    plt.plot(m, bio_mass)
+    plt.xlabel('Number of species')
+    plt.ylabel('Biomass(Mg/ha)')
+    plt.legend(loc='best')
+    plt.show()
+    
+    return
+
+
+def task4_rainfall(t, mean_rainfall , frequency):
+    drought_period = 365/ frequency 
+    rain_period = 365 
+    irregular_stddev = IRR_LINE/2 
+
+    # Generate the rainfall data for each pattern
+    drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
+    rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
+    dryseason_rainfall = RAIN_LINE - RAIN_LINE * np.sin(2*np.pi*t/rain_period) 
+    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
+    
+    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
+        irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+        
+    return
+
+
+def task4():
+    return
 
 if __name__ == '__main__':
-    
-    task1()
     # t = np.linspace(25, 145, 121)
     # rainfall(t)
+    # task1()
+    task2()
     
     
     
