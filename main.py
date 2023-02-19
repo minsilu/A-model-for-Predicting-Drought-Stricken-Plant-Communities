@@ -13,11 +13,11 @@ def rainfall(t):
     # Generate the rainfall data for each pattern
     drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
     rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
-    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
+    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
     
-    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
-    # while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
-    #     irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
+        irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
 
     # plt.figure(figsize=(30, 5))
     # plt.plot(t, drought_rainfall, label='Drought Years(600mm/yr)')
@@ -112,13 +112,15 @@ def species_population(n0, t, population_type="common", species_num = 3):
 #     plt.show()
 
 def task1():
-    t = np.linspace(0, 100, 101) # 时间周期，从0到100月, 一共101个点
+    t = np.linspace(0, 120, 121) # 时间周期，10年, 一共101个点
     # N0 = 1 # 种群初始生物量
     m = 3 # 种群数量
     # 生成生态型列表，每个物种有三种生态型，每种生态型占1/3
     plant_type_list = ["wet", "xerophytic", "common"] * int(m/3)
-    # 打乱生态型列表，使得每个物种的生态型随机
-    random.shuffle(plant_type_list)
+    
+    # # 打乱生态型列表，使得每个物种的生态型随机
+    # random.shuffle(plant_type_list)
+    
     result = np.zeros(len(t))
     # 原始假设：假设物种有30种，并且每个物种分为潮湿型、干旱性、常见型三种生态型，这三种类型分类依据是在不同的降雨条件下，物种的生长速率不同
     for i in range(m):
