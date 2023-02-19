@@ -13,19 +13,23 @@ def rainfall(t):
     # Generate the rainfall data for each pattern
     drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
     rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
-    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
-    while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
-        irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
+    
+    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    # while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
+    #     irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
 
-    # plt.figure(figsize=(20, 8))
-    # plt.plot(t, drought_rainfall, label='Drought')
-    # plt.plot(t, rain_rainfall, label='Rainfall')
-    # plt.plot(t, irregular_rainfall, label='Irregular')
-    # plt.xlabel('Time (months)')
-    # plt.ylabel('Rainfall (mm)')
-    # plt.legend()
-    # plt.show()
-    # plt.savefig('rainfall.png')
+    plt.figure(figsize=(30, 5))
+    plt.plot(t, drought_rainfall, label='Drought Years(600mm/yr)')
+    plt.plot(t, rain_rainfall, label='Abundant Years(900mm/yr)')
+    plt.plot(t, irregular_rainfall, label='Irregular Years(900mm/yr)')
+    plt.xlabel('Time (months)')
+    plt.ylabel('Rainfall (mm)')
+    plt.legend()
+    plt.show()
+    # 保存图片
+    # plt.savefig('rainfall_120months.png')
+    
     
     if WEATHER == 'drought':
         return drought_rainfall
@@ -110,7 +114,7 @@ def species_population(n0, t, population_type="common", species_num = 3):
 def task1():
     t = np.linspace(0, 100, 101) # 时间周期，从0到100月, 一共101个点
     # N0 = 1 # 种群初始生物量
-    m = 30 # 种群数量
+    m = 3 # 种群数量
     # 生成生态型列表，每个物种有三种生态型，每种生态型占1/3
     plant_type_list = ["wet", "xerophytic", "common"] * int(m/3)
     # 打乱生态型列表，使得每个物种的生态型随机
@@ -131,9 +135,9 @@ def task1():
 
 if __name__ == '__main__':
     
-    task1()
-    
-    # rainfall(t)
+    # task1()
+    t = np.linspace(0, 120, 121)
+    rainfall(t)
     
     
     
