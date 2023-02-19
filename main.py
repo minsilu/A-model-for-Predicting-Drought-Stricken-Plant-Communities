@@ -6,30 +6,28 @@ import random
 
 
 def rainfall(t):
-    drought_period = 12 # drought cycle period (in months)
-    rain_period = 12 # rainfall cycle period (in months)
+    drought_period = 365 # drought cycle period (in months)
+    rain_period = 365 # rainfall cycle period (in months)
     irregular_stddev = IRR_LINE/2 # standard deviation of the irregular rainfall distribution
 
     # Generate the rainfall data for each pattern
     drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
     rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
+    dryseason_rainfall = RAIN_LINE - RAIN_LINE * np.sin(2*np.pi*t/rain_period) 
     # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
     
     irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
     while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
         irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
 
-    # plt.figure(figsize=(30, 5))
-    # plt.plot(t, drought_rainfall, label='Drought Years(600mm/yr)')
-    # plt.plot(t, rain_rainfall, label='Abundant Years(900mm/yr)')
+    # plt.figure(figsize=(16, 5))
+    # plt.plot(t, drought_rainfall, label='Rainy Season(600mm/yr)')
+    # plt.plot(t, dryseason_rainfall, label='Dry Season(900mm/yr)')
     # plt.plot(t, irregular_rainfall, label='Irregular Years(900mm/yr)')
-    # plt.xlabel('Time (months)')
+    # plt.xlabel('Time (days)')
     # plt.ylabel('Rainfall (mm)')
     # plt.legend()
     # plt.show()
-    # 保存图片
-    # plt.savefig('rainfall_120months.png')
-    
     
     if WEATHER == 'drought':
         return drought_rainfall
@@ -37,7 +35,8 @@ def rainfall(t):
         return rain_rainfall
     elif WEATHER == 'irregular':
         return irregular_rainfall
-
+    elif WEATHER == 'dryseason':
+        return dryseason_rainfall
 
 def water_use_rate(t, plant_type):
     # Calculate available water based on rainfall
@@ -51,19 +50,19 @@ def water_use_rate(t, plant_type):
         if available_water < DROUGHT_LINE:
             available_water = 0
         elif available_water >= DROUGHT_LINE and available_water <= RAIN_LINE:
-            available_water *= 0.003
+            available_water *= 0.03 *0.28
         elif available_water > RAIN_LINE:
-            available_water *= 0.007
+            available_water *= 0.07 *0.28
     elif plant_type == "xerophytic":
         # available_water *= 0.4
-        available_water *= 0.004
+        available_water *= 0.04 *0.28
     elif plant_type == "common":
         # available_water[ available_water <= DROUGHT_LINE] *= 0 
         # available_water[ available_water > DROUGHT_LINE] *= 0.5
         if available_water <= DROUGHT_LINE:
             available_water = 0
         elif available_water > DROUGHT_LINE:
-            available_water *= 0.005
+            available_water *= 0.05 *0.28
     # print(available_water)
     return available_water
 
@@ -91,11 +90,17 @@ def species_population(n0, t, population_type="common", species_num = 3):
     global total
     total += n0
     n = n0 # 该物种当前生物量
+    stable_time = None
+    flag = False
     for i in np.nditer(t):
-        total += n * water_use_rate(i, population_type) * ( 1- n/K - coef_competition(species_num) * (total-n)/K )
-        n += n * water_use_rate(i, population_type) * ( 1- n/K - coef_competition(species_num) * (total-n)/K )
+        total += n * water_use_rate(i, population_type) * ( 1- n/E - coef_competition(species_num) * (total-n)/E )
+        n += n * water_use_rate(i, population_type) * ( 1- n/E - coef_competition(species_num) * (total-n)/E )
         result.append(n)
-    return np.array(result)
+        if n >= 0.99*E and flag == False:
+            stable_time = i
+            flag = True
+            # print(n, stable_time)
+    return np.array(result), stable_time
 
 
 # def pytask1():
@@ -112,33 +117,67 @@ def species_population(n0, t, population_type="common", species_num = 3):
 #     plt.show()
 
 def task1():
-    t = np.linspace(0, 120, 121) # 时间周期，10年, 一共101个点
-    # N0 = 1 # 种群初始生物量
-    m = 3 # 种群数量
-    # 生成生态型列表，每个物种有三种生态型，每种生态型占1/3
-    plant_type_list = ["wet", "xerophytic", "common"] * int(m/3)
-    
-    # # 打乱生态型列表，使得每个物种的生态型随机
-    # random.shuffle(plant_type_list)
-    
-    result = np.zeros(len(t))
-    # 原始假设：假设物种有30种，并且每个物种分为潮湿型、干旱性、常见型三种生态型，这三种类型分类依据是在不同的降雨条件下，物种的生长速率不同
-    for i in range(m):
-        result += species_population(N0,t, population_type= plant_type_list[i], species_num = m)
-    
-    # N_total = np.sum(N, axis=1)
+    global WEATHER, total
+    weather_list = [ "rainfall", "irregular","dryseason"]
+    change_weather_result = []
+    for i in range(3):
+        WEATHER = weather_list[i]
+        total = 0
+        
+        t = np.linspace(25, 145, 121)
+        m = 3 # 种群数量
+        # 生成生态型列表，每个物种有三种生态型，每种生态型占1/3
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        # # 打乱生态型列表，使得每个物种的生态型随机
+        # random.shuffle(plant_type_list)
+        
+        community = np.zeros(len(t))
+        # 原始假设：假设物种有3种，并且每个分别潮湿型、干旱性、常见型三种生态型，这三种类型分类依据是在不同的降雨条件下，物种的生长速率不同
+        species = []
+        stable_time = []
+        bio_mass = []
+        for i in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[i], species_num = m)
+            species.append(one)
+            stable_time.append(time)
+            bio_mass.append(one[-1])
+            community += one
+        bio_mass.append(community[-1])
+        
+
+        plt.figure(figsize=(9,6))
+        plt.plot(t, species[0], label="Wet")
+        plt.plot(t, species[1], label="Common")
+        plt.plot(t, species[2], label="Xerophytic")
+        plt.plot(t, community, label="Community")
+        plt.xlabel('Time(Days)')
+        plt.ylabel('Biomass(Mg/ha)')
+        plt.legend(loc='best')
+        plt.show()
+        
+        print(WEATHER)
+        print (stable_time)
+        print (bio_mass)
+        change_weather_result.append(community)
+        
+
     plt.figure(figsize=(9,6))
-    plt.plot(t, result, label="n(t)")
-    plt.xlabel('Time')
-    plt.ylabel('Population size')
+    plt.plot(t, change_weather_result[0], label="Rainy season")
+    plt.plot(t, change_weather_result[1], label="Irregular cycle")
+    plt.plot(t, change_weather_result[2], label="Dry season")
+    plt.xlabel('Time(Days)')
+    plt.ylabel('Community Biomass(Mg/ha)')
     plt.legend(loc='best')
     plt.show()
+    
+
 
 
 if __name__ == '__main__':
     
     task1()
-    # t = np.linspace(0, 120, 121)
+    # t = np.linspace(25, 145, 121)
     # rainfall(t)
     
     
