@@ -14,20 +14,20 @@ def rainfall(t):
     drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
     rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
     dryseason_rainfall = RAIN_LINE - RAIN_LINE * np.sin(2*np.pi*t/rain_period) 
-    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
+    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
     
-    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
-    while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
-        irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
+    # while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
+    #     irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
 
-    # plt.figure(figsize=(16, 5))
-    # plt.plot(t, drought_rainfall, label='Rainy Season(600mm/yr)')
-    # plt.plot(t, dryseason_rainfall, label='Dry Season(900mm/yr)')
-    # plt.plot(t, irregular_rainfall, label='Irregular Years(900mm/yr)')
-    # plt.xlabel('Time (days)')
-    # plt.ylabel('Rainfall (mm)')
-    # plt.legend()
-    # plt.show()
+    plt.figure(figsize=(16, 5))
+    plt.plot(t, drought_rainfall, label='Rainy Season(900mm/yr)')
+    plt.plot(t, dryseason_rainfall, label='Dry Season(900mm/yr)')
+    plt.plot(t, irregular_rainfall, label='Irregular Circle(900mm/yr)')
+    plt.xlabel('Time (days)')
+    plt.ylabel('Rainfall (mm)')
+    plt.legend()
+    plt.show()
     
     if WEATHER == 'drought':
         return drought_rainfall
@@ -171,9 +171,6 @@ def task1():
     plt.show()
     
 
-
-        
-
 def task2():
     t = np.linspace(1, 365, 365)
     m = np.linspace(0, 150, 151)
@@ -225,20 +222,13 @@ def task2():
 
 
 def task4_rainfall(t, mean_rainfall , frequency):
-    drought_period = 365/ frequency 
-    rain_period = 365 
+    period = 365/ frequency 
     irregular_stddev = IRR_LINE/2 
 
     # Generate the rainfall data for each pattern
-    drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
-    rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
-    dryseason_rainfall = RAIN_LINE - RAIN_LINE * np.sin(2*np.pi*t/rain_period) 
-    # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
-    
-    irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
-    while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
-        irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
-        
+    drought_rainfall = mean_rainfall * np.sin(2*np.pi*t/period) + mean_rainfall
+
+
     return
 
 
@@ -246,10 +236,10 @@ def task4():
     return
 
 if __name__ == '__main__':
-    # t = np.linspace(25, 145, 121)
-    # rainfall(t)
+    t = np.linspace(25, 145, 121)
+    rainfall(t)
     # task1()
-    task2()
+    # task2()
     
     
     
