@@ -19,14 +19,14 @@ def rainfall(t):
     # while irregular_rainfall < 0 or irregular_rainfall > 2*IRR_LINE:
     #     irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev)
 
-    plt.figure(figsize=(30, 5))
-    plt.plot(t, drought_rainfall, label='Drought Years(600mm/yr)')
-    plt.plot(t, rain_rainfall, label='Abundant Years(900mm/yr)')
-    plt.plot(t, irregular_rainfall, label='Irregular Years(900mm/yr)')
-    plt.xlabel('Time (months)')
-    plt.ylabel('Rainfall (mm)')
-    plt.legend()
-    plt.show()
+    # plt.figure(figsize=(30, 5))
+    # plt.plot(t, drought_rainfall, label='Drought Years(600mm/yr)')
+    # plt.plot(t, rain_rainfall, label='Abundant Years(900mm/yr)')
+    # plt.plot(t, irregular_rainfall, label='Irregular Years(900mm/yr)')
+    # plt.xlabel('Time (months)')
+    # plt.ylabel('Rainfall (mm)')
+    # plt.legend()
+    # plt.show()
     # 保存图片
     # plt.savefig('rainfall_120months.png')
     
@@ -135,9 +135,9 @@ def task1():
 
 if __name__ == '__main__':
     
-    # task1()
-    t = np.linspace(0, 120, 121)
-    rainfall(t)
+    task1()
+    # t = np.linspace(0, 120, 121)
+    # rainfall(t)
     
     
     
