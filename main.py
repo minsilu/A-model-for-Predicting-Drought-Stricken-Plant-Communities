@@ -11,7 +11,7 @@ def rainfall(t):
     irregular_stddev = IRR_LINE/2 # standard deviation of the irregular rainfall distribution
 
     # Generate the rainfall data for each pattern
-    drought_rainfall = 600/365 * np.sin(2*np.pi*t/drought_period) + 600/365
+    drought_rainfall = DROUGHT_LINE * np.sin(2*np.pi*t/drought_period) + DROUGHT_LINE
     rain_rainfall = RAIN_LINE * np.sin(2*np.pi*t/rain_period) + RAIN_LINE
     dryseason_rainfall = RAIN_LINE - RAIN_LINE * np.sin(2*np.pi*t/rain_period) 
     # irregular_rainfall = np.random.normal(IRR_LINE, irregular_stddev, len(t))
