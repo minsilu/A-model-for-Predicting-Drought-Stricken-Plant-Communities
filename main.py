@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from config import *
 from scipy.integrate import odeint
 import random
+from matplotlib.colors import LinearSegmentedColormap
 
 
 def rainfall(t):
@@ -94,8 +95,11 @@ def species_population(n0, t, population_type="common", species_num = 3):
     stable_time = None
     flag = False
     for i in np.nditer(t):
-        total += n * water_use_rate(i, population_type) * ( 1- n/E - coef_competition(species_num) * (total-n)/E )
-        n += n * water_use_rate(i, population_type) * ( 1- n/E - coef_competition(species_num) * (total-n)/E )
+        temp = n * water_use_rate(i, population_type) * ( 1- n/E - coef_competition(species_num) * (total-n)/E )
+        if temp < 0: 
+            temp = 0
+        total += n * temp
+        n += n * temp
         result.append(n)
         if n >= 0.99*E and flag == False:
             stable_time = i
@@ -325,11 +329,71 @@ def task4():
 
     return
 
+def task5_function(capacity):
+    global K
+    K = capacity
+    
+    t = np.linspace(0, 365, 366)
+    num = 3
+    plant_type_list = ["wet", "common", "xerophytic"]
+    random.shuffle(plant_type_list)
+    community = np.zeros(len(t))
+    
+    for j in range(num):
+        one, time = species_population(N0, t, population_type= plant_type_list[random.randint(0,2)], species_num = num)
+        community += one
+    
+    return community[-1]
+
+def task5():
+    D = 0.2
+    dt = 1
+    K_max = 100
+    a = 5
+    C_50 = 0.5
+
+    C = np.zeros((100, 100))
+    C[random.randint(20,80), random.randint(20,80)] = 2000
+
+    for t in np.arange(0, 365, dt):
+        C[1:-1, 1:-1] += D*dt*(C[2:, 1:-1] - 2*C[1:-1, 1:-1] + C[:-2, 1:-1] +
+                                C[1:-1, 2:] - 2*C[1:-1, 1:-1] + C[1:-1, :-2])
+
+    C = np.subtract(1, C)
+
+    K_matrix  = K_max / (1 + np.exp(-a*(C - C_50)))
+    
+    biomass_matrix = np.zeros((100, 100))
+    for i in range(100):
+        print ("The progress is",i+1,"/100")
+        for j in range(100):
+            biomass_matrix[i, j] = task5_function(K_matrix[i, j])
+    
+    C_map = plt.imshow(C, cmap='viridis')
+    C_colorbar = plt.colorbar(C_map)
+    C_colorbar.set_label('Pollution Concentration')
+    plt.show()
+
+    K_map = plt.imshow(K_matrix, cmap='viridis')
+    K_colorbar = plt.colorbar(K_map)
+    K_colorbar.set_label('Environmental capacity after contamination')
+    plt.show()
+    
+    cmap_colors = [(1.0, 0.9490196078431372, 0.0), (0.13333333333333333, 0.6941176470588235, 0.2980392156862745)]
+    custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", cmap_colors)
+    bio_map = plt.imshow(biomass_matrix, cmap=custom_cmap)
+    bio_colorbar = plt.colorbar(bio_map)
+    bio_colorbar.set_label('Biomass after contamination')
+    plt.show()
+    
+    return
+
+
 if __name__ == '__main__':
     # t = np.linspace(25, 145, 121)
     # rainfall(t)
     # task1()
-    task3()
+    task5()
     # task4()
     
     
