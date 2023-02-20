@@ -1,2 +1,0 @@
-# simple_vrptw
-使用Python编写模拟退火算法求解VRPTW
