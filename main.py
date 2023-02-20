@@ -371,13 +371,231 @@ def task5():
     return
 
 
+def sensitivity1():
+    global total, DROUGHT_LINE
+    line_list = [ 400/365,500/365,600/365,700/365,800/365]
+    result = []
+    for i in range(len(line_list)):
+        DROUGHT_LINE = line_list[i]
+        total = 0
+        
+        t = np.linspace(0, 365, 366)
+        m = 30 # 种群数量
+      
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        community = np.zeros(len(t))
+
+        species = []
+        for j in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[j], species_num = m)
+            species.append(one)
+            community += one
+        
+        result.append(community)
+        
+    plt.figure(figsize=(9,6))
+    plt.plot(t, result[0], label="400mm/365")
+    plt.plot(t, result[1], label="500mm/365")
+    plt.plot(t, result[2], label="600mm/365")
+    plt.plot(t, result[3], label="700mm/365")
+    plt.plot(t, result[4], label="800mm/365")
+    plt.xlabel('Time(Days)')
+    plt.ylabel('Community Biomass(Mg/ha)')
+    plt.title('Community Biomass under different Drought Line')
+    plt.legend(loc='best')
+    plt.show()
+
+
+def sensitivity2():
+    global total, RAIN_LINE
+    line_list = [ 700/365,800/365,900/365,1000/365,1100/365]
+    result = []
+    for i in range(len(line_list)):
+        RAIN_LINE = line_list[i]
+        total = 0
+        
+        t = np.linspace(0, 365, 366)
+        m = 30 # 种群数量
+      
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        community = np.zeros(len(t))
+
+        species = []
+        for j in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[j], species_num = m)
+            species.append(one)
+            community += one
+        
+        result.append(community)
+        
+    plt.figure(figsize=(9,6))
+    plt.plot(t, result[0], label="700mm/365")
+    plt.plot(t, result[1], label="800mm/365")
+    plt.plot(t, result[2], label="900mm/365")
+    plt.plot(t, result[3], label="1000mm/365")
+    plt.plot(t, result[4], label="1100mm/365")
+    plt.xlabel('Time(Days)')
+    plt.ylabel('Community Biomass(Mg/ha)')
+    plt.title('Community Biomass under different Rain Line')
+    plt.legend(loc='best')
+    plt.show()
+    
+def sensitivity3():
+    global total, N0
+    line_list = [ 0.0001, 0.001, 0.01, 0.1]
+    result = []
+    for i in range(len(line_list)):
+        N0 = line_list[i]
+        total = 0
+        
+        t = np.linspace(0, 365, 366)
+        m = 30 # 种群数量
+      
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        community = np.zeros(len(t))
+
+        species = []
+        for j in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[j], species_num = m)
+            species.append(one)
+            community += one
+        
+        result.append(community)
+        
+    plt.figure(figsize=(9,6))
+    plt.plot(t, result[0], label="N0 = 0.0001 Mg/ha")
+    plt.plot(t, result[1], label="N0 = 0.001 Mg/ha")
+    plt.plot(t, result[2], label="N0 = 0.01 Mg/ha")
+    plt.plot(t, result[3], label="N0 = 0.1 Mg/ha")
+  
+    
+    plt.xlabel('Time(Days)')
+    plt.ylabel('Community Biomass(Mg/ha)')
+    plt.title('Community Biomass under different N0')
+    plt.legend(loc='best')
+    plt.show()
+
+def sensitivity4():
+    global total, E
+    line_list = [0.5, 1, 3, 5, 10, 20]
+    result = []
+    for i in range(len(line_list)):
+        E = line_list[i]
+        total = 0
+        
+        t = np.linspace(0, 1500, 1501)
+        m = 30 # 种群数量
+      
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        community = np.zeros(len(t))
+
+        species = []
+        for j in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[j], species_num = m)
+            species.append(one)
+            community += one
+        
+        result.append(community)
+        
+    plt.figure(figsize=(9,6))
+    plt.plot(t, result[0], label="Mean niche 0.5 Mg/ha")
+    plt.plot(t, result[1], label="Mean niche 1 Mg/ha")
+    plt.plot(t, result[2], label="Mean niche 3 Mg/ha")
+    plt.plot(t, result[3], label="Mean niche 5 Mg/ha")
+    plt.plot(t, result[4], label="Mean niche 10 Mg/ha")
+    plt.plot(t, result[5], label="Mean niche 20 Mg/ha")
+  
+    
+    plt.xlabel('Time(Days)')
+    plt.ylabel('Community Biomass(Mg/ha)')
+    plt.title('Community Biomass under different Mean niche')
+    plt.legend(loc='best')
+    plt.show()
+
+def sensitivity4():
+    global total, E
+    line_list = [0.5, 1, 3, 5, 10, 20]
+    result = []
+    for i in range(len(line_list)):
+        E = line_list[i]
+        total = 0
+        
+        t = np.linspace(0, 1500, 1501)
+        m = 30 # 种群数量
+      
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        community = np.zeros(len(t))
+
+        species = []
+        for j in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[j], species_num = m)
+            species.append(one)
+            community += one
+        
+        result.append(community)
+        
+    plt.figure(figsize=(9,6))
+    plt.plot(t, result[0], label="Mean niche 0.5 Mg/ha")
+    plt.plot(t, result[1], label="Mean niche 1 Mg/ha")
+    plt.plot(t, result[2], label="Mean niche 3 Mg/ha")
+    plt.plot(t, result[3], label="Mean niche 5 Mg/ha")
+    plt.plot(t, result[4], label="Mean niche 10 Mg/ha")
+    plt.plot(t, result[5], label="Mean niche 20 Mg/ha")
+  
+    
+    plt.xlabel('Time(Days)')
+    plt.ylabel('Community Biomass(Mg/ha)')
+    plt.title('Community Biomass under different Mean niche')
+    plt.legend(loc='best')
+    plt.show()
+
+def sensitivity5():
+    global total, K
+    line_list = np.linspace(0, 100, 101)
+    result = []
+    
+    for i in range(len(line_list)):
+        K = line_list[i]
+        total = 0
+        
+        t = np.linspace(0, 365, 366)
+        m = 30 # 种群数量
+      
+        plant_type_list = ["wet", "common", "xerophytic"] * int(m/3)
+        
+        community = np.zeros(len(t))
+
+        species = []
+        for j in range(m):
+            one, time = species_population(N0,t, population_type= plant_type_list[j], species_num = m)
+            species.append(one)
+            community += one
+        
+        result.append(community[-1])
+        # print('process: ', i, '/100', 'total: ', community[-1])
+        print(K, community[-1])
+        
+    plt.figure(figsize=(9,6))
+    plt.plot(line_list, result)
+    plt.xlabel('K(Mg/ha)')
+    plt.ylabel('Community Biomass(Mg/ha)')
+    plt.title('Biomass of communities under different K')
+    plt.legend(loc='best')
+    plt.show()
+
+
 if __name__ == '__main__':
     # t = np.linspace(25, 145, 121)
     # rainfall(t)
     # task1()
-    task5()
+    # task2()
     # task4()
-    
+    sensitivity2()
     
     
 
