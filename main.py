@@ -6,6 +6,17 @@ import random
 from matplotlib.colors import LinearSegmentedColormap
 
 
+def is_dry(t):
+    len_rain = int((365 - 30 * frequency)/(12-frequency))
+    if len_rain < 0: 
+        len_rain = 0
+    if (t % (len_rain+30)) > len_rain:
+        return 1
+    elif (t % (len_rain+30)) == len_rain and len_rain != 0:
+        return 2
+    return 0
+
+
 def rainfall(t):
     drought_period = 365/2 # drought cycle period (in months)
     rain_period = 365/2 # rainfall cycle period (in months)
@@ -35,6 +46,10 @@ def rainfall(t):
     elif WEATHER == 'rainfall':
         return rain_rainfall
     elif WEATHER == 'irregular':
+        # if is_dry(t):
+        #     return irregular_rainfall/3
+        # else :
+        #     return irregular_rainfall
         return irregular_rainfall
     elif WEATHER == 'dryseason':
         return dryseason_rainfall
@@ -95,7 +110,11 @@ def species_population(n0, t, population_type="common", species_num = 3):
             stable_time = i
             flag = True
             # print(n, stable_time)
-
+        # if is_dry(i) ==2:
+        #     total -= 0.1 * n 
+        #     n *= 0.9
+        
+        
     return np.array(result), stable_time
 
 
@@ -242,70 +261,85 @@ def task3():
     plt.show()
 
 
-
 def task4_rainfall(t):
     period = 365 / frequency
     rainfall = mean_rainfall * np.sin(2*np.pi*t/period) + mean_rainfall
     return rainfall
 
 def task4_function(f,r):
-    global frequency , mean_rainfall, total, K
+    global frequency , IRR_LINE, total, dry_list
+    
     frequency = int(f)
-    mean_rainfall = int(r/365)
+    IRR_LINE = int(r/365)
+    
     total = 0
     t = np.linspace(1, 365, 365)
-    num = 50
-
+    
+    num = 10
     plant_type_list = ["wet", "common", "xerophytic"]
-    random.shuffle(plant_type_list)
+    
     community = np.zeros(len(t))
     
     for j in range(num):
         one, time = species_population(N0, t, population_type= plant_type_list[random.randint(0,2)], species_num = num)
         community += one
-        
-    mass = community[-1]
-    return mass
+     
+    return community[-1]
 
 
 def task4():
-    # global K
-    # K = mean_rainfall/1000 *100
+
+    # biomass_matrix = np.random.rand(10, 10)
+    # for i in range(10):
+    #     for j in range(10):
+    #         biomass_matrix[i, j] = task4_function( i+1, 100 + 100*j )
+    # print(biomass_matrix)
     
-    biomass_matrix = np.random.rand(10, 10)
-    for i in range(10):
-        for j in range(10):
-            biomass_matrix[i, j] = task4_function( i+1, 100 + 100*j )
-    print(biomass_matrix)
+    # part1 = biomass_matrix[:, :3]
+    # part2 = biomass_matrix[:, 3:7]
+    # part3 = biomass_matrix[:, 7:]
+
+    # start = [100,400,800]
+    # fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10, 4))
+
+    # for i, part in enumerate([part1, part2, part3]):
+    #     im = axes[i].imshow(part, cmap='coolwarm')
+    #     axes[i].set_xticks(np.arange(0, part.shape[1], step=1))
+    #     axes[i].set_xticklabels(np.arange(start[i], part.shape[1]*100 + start[i] , step= 100))
+    #     axes[i].set_yticks(np.arange(0, part.shape[0], step=1))
+    #     axes[i].set_yticklabels(np.arange(1 , 11, step= 1))
+    #     cbar = axes[i].figure.colorbar(im, ax=axes[i])
+    #     cbar.ax.set_ylabel('Biomass')
+
+    # # 调整子图布局和间距
+    # fig.tight_layout(pad=3.0)
+
+    # plt.show()
     
-    part1 = biomass_matrix[:, :3]
-    part2 = biomass_matrix[:, 3:7]
-    part3 = biomass_matrix[:, 7:]
+    
+    # 干旱范围更广的实验
+    matrix = np.zeros((100, 100))
 
-    start = [100,400,800]
-    fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10, 4))
-
-    for i, part in enumerate([part1, part2, part3]):
-        im = axes[i].imshow(part, cmap='coolwarm')
-        axes[i].set_xticks(np.arange(0, part.shape[1], step=1))
-        axes[i].set_xticklabels(np.arange(start[i], part.shape[1]*100 + start[i] , step= 100))
-        axes[i].set_yticks(np.arange(0, part.shape[0], step=1))
-        axes[i].set_yticklabels(np.arange(1 , 11, step= 1))
-        cbar = axes[i].figure.colorbar(im, ax=axes[i])
-        cbar.ax.set_ylabel('Biomass')
-
-    # 调整子图布局和间距
-    fig.tight_layout(pad=3.0)
-
+    percentage = 0.3
+    num_points = int(percentage * matrix.size)
+    indices = np.random.choice(range(matrix.size), num_points, replace=False)
+    matrix.flat[indices] = random.randint(300, 600)
+    matrix.flat[np.setdiff1d(range(matrix.size), indices)] = random.randint(600, 1200)
+    
+    biomass_matrix = np.zeros((100, 100))
+    for i in range(100):
+        print ("The progress is",i+1,"/100")
+        for j in range(100):
+            biomass_matrix[i, j] = task4_function(0, matrix[i, j])
+    
+    cmap_colors = [(1.0, 0.9490196078431372, 0.0), (0.13333333333333333, 0.6941176470588235, 0.2980392156862745)]
+    custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", cmap_colors)
+    bio_map = plt.imshow(biomass_matrix, cmap=custom_cmap)
+    bio_colorbar = plt.colorbar(bio_map)
+    bio_colorbar.set_label('Biomass distribution (drought range 70%)')
     plt.show()
     
-    # plt.imshow(biomass_matrix, cmap='hot')
-    # plt.xticks(np.arange(0, 3, step=1), np.arange(100, 400, step= 100))
-    # plt.yticks(np.arange(0, 10, step=1), np.arange(10, 0, step=-1))
-    # cbar = plt.colorbar()
-    # cbar.ax.set_ylabel('Color Depth')
-    # plt.show()
-
+    
     return
 
 def task5_function(capacity):
@@ -594,8 +628,8 @@ if __name__ == '__main__':
     # rainfall(t)
     # task1()
     # task2()
-    # task4()
-    sensitivity2()
+    task4()
+    #sensitivity2()
     
     
 
