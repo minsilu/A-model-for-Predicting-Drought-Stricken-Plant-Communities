@@ -174,8 +174,6 @@ def task1():
     plt.show()
 
 
-
-
 def task2():
     t = np.linspace(1, 365, 365)
     m = np.linspace(0, 100, 101)
@@ -623,12 +621,63 @@ def sensitivity5():
     plt.show()
 
 
+def water_draw(available_water, plant_type):
+    # Adjust available water based on plant type
+    if plant_type == "wet":
+        available_water[ available_water < DROUGHT_LINE] *= 0
+        available_water[ (available_water>= DROUGHT_LINE) & (available_water<= RAIN_LINE)] *= 0.03 * 0.28
+        available_water[ available_water> RAIN_LINE] *= 0.07 * 0.28
+        # if available_water < DROUGHT_LINE:
+        #     available_water = 0
+        # elif available_water >= DROUGHT_LINE and available_water <= RAIN_LINE:
+        #     available_water *= 0.03 *0.28
+        # elif available_water > RAIN_LINE:
+        #     available_water *= 0.07 *0.28
+    elif plant_type == "xerophytic":
+        available_water *= 0.04 *0.28
+    elif plant_type == "common":
+        available_water[ available_water <= DROUGHT_LINE] *= 0 
+        available_water[ available_water > DROUGHT_LINE] *= 0.05 *0.28
+        # if available_water <= DROUGHT_LINE:
+        #     available_water = 0
+        # elif available_water > DROUGHT_LINE:
+        #     available_water *= 0.05 *0.28
+    # print(plant_type)
+    # print(available_water)
+    
+    return available_water
+
+def plant():
+    
+    plant_list = ["wet", "common", "xerophytic"] 
+    result = []
+    
+    # ranfall = ranfall / 365
+    # print(ranfall)
+    
+    for j in range(3):
+        ranfall = np.linspace(0, 1500, 1501) / 365
+        result.append(water_draw(ranfall, plant_list[j]))
+        # print (water_draw(ranfall, plant_list[j]))
+    
+    ranfall = np.linspace(0, 1500, 1501) / 365
+    plt.figure(figsize=(9,6))
+    plt.plot(ranfall, result[0], label="Wet")
+    plt.plot(ranfall, result[1], label="Common")
+    plt.plot(ranfall, result[2], label="Xerophytic")
+    plt.xlabel('Ranfall(mm/day)')
+    plt.ylabel('Water Use Efficiency')
+    plt.legend(loc='best')
+    plt.show()
+        
+    return
+
 if __name__ == '__main__':
     # t = np.linspace(25, 145, 121)
     # rainfall(t)
     # task1()
     # task2()
-    task4()
+    plant()
     #sensitivity2()
     
     
