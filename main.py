@@ -76,16 +76,6 @@ def coef_competition(m):
         return 1 - K/(E*m)
 
 
-# def diff1(n, t):
-#     n1,n2,n3 = n
-#     w = np.array(water_use_rate(t, "common"))
-#     b = coef_competition(m) 
-#     dn1_dt = n1 * w * ( 1- n1/K - b * (n2+n3)/K )
-#     dn2_dt = n2 * w * ( 1- n2/K - b * (n1+n3)/K )
-#     dn3_dt = n3 * w * ( 1- n3/K - b * (n2+n3)/K )
-#     return np.array([dn1_dt, dn2_dt, dn3_dt])
-
-
 # 我们自己定义的积分函数,用于计算单个物种的生物量变化曲线
 def species_population(n0, t, population_type="common", species_num = 3):
     result =[]
@@ -98,28 +88,17 @@ def species_population(n0, t, population_type="common", species_num = 3):
         temp = n * water_use_rate(i, population_type) * ( 1- n/E - coef_competition(species_num) * (total-n)/E )
         if temp < 0: 
             temp = 0
-        total += n * temp
-        n += n * temp
+        total += temp
+        n += temp
         result.append(n)
         if n >= 0.99*E and flag == False:
             stable_time = i
             flag = True
             # print(n, stable_time)
+
     return np.array(result), stable_time
 
 
-# def pytask1():
-#     N = odeint(diff1, N0, t)  
-#     # N_total = np.sum(N, axis=1)
-#     plt.figure(figsize=(9,6))
-#     plt.plot(t, N[:,0], label="n1(t)")
-#     plt.plot(t, N[:,1], label="n2(t)")
-#     plt.plot(t, N[:,2], label="n3(t)")
-#     # plt.plot(t, N_total, label="n(t)")
-#     plt.xlabel('Time')
-#     plt.ylabel('Population size')
-#     plt.legend(loc='best')
-#     plt.show()
 
 def task1():
     global WEATHER, total
@@ -330,11 +309,12 @@ def task4():
     return
 
 def task5_function(capacity):
-    global K
+    global K, total
+    total = 0
     K = capacity
     
-    t = np.linspace(0, 365, 366)
-    num = 3
+    t = np.linspace(1, 365, 365)
+    num = 10
     plant_type_list = ["wet", "common", "xerophytic"]
     random.shuffle(plant_type_list)
     community = np.zeros(len(t))
@@ -342,8 +322,10 @@ def task5_function(capacity):
     for j in range(num):
         one, time = species_population(N0, t, population_type= plant_type_list[random.randint(0,2)], species_num = num)
         community += one
-    
+  
     return community[-1]
+
+
 
 def task5():
     D = 0.2
@@ -368,7 +350,7 @@ def task5():
         print ("The progress is",i+1,"/100")
         for j in range(100):
             biomass_matrix[i, j] = task5_function(K_matrix[i, j])
-    
+
     C_map = plt.imshow(C, cmap='viridis')
     C_colorbar = plt.colorbar(C_map)
     C_colorbar.set_label('Pollution Concentration')
